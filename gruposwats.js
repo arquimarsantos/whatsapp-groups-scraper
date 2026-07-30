@@ -1,26 +1,29 @@
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const { execFile } = require('child_process');
-const path = require('path');
 
 puppeteer.use(StealthPlugin());
 
-const PHP_SCRIPT = path.join(__dirname, 'save-scraped-group.php');
-
-function saveGroup(link, description = null, countryCode = null) {
-    return new Promise((resolve, reject) => {
-        const args = [PHP_SCRIPT, link, description || ''];
-        if (countryCode) {
-            args.push(String(countryCode));
-        }
-        execFile('php', args, (err, stdout, stderr) => {
-            if (err) {
-                return reject(new Error(stderr || err.message));
-            }
-            console.log(stdout.trim());
-            resolve(stdout);
-        });
+async function saveGroup(link, description = null, countryCode = null) {
+    const response = await fetch(process.env.SITE_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-SCRAPER-TOKEN": process.env.SCRAPER_TOKEN
+        },
+        body: JSON.stringify({
+            link: link,
+            description: description,
+            country_code: countryCode
+        })
     });
+
+    const result = await response.text();
+
+    if (!response.ok) {
+        throw new Error(result);
+    }
+
+    console.log(result);
 }
 
 (async () => {
