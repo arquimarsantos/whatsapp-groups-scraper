@@ -26,4 +26,7 @@ jobs:
         run: npm install
 
       - name: Run scraper
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          SCRAPER_TOKEN: ${{ secrets.SCRAPER_TOKEN }}
         run: node gruposwats.js
