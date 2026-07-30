@@ -4,8 +4,6 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
 async function saveGroup(link, description = null, countryCode = null) {
-    console.log("SITE_URL:", process.env.SITE_URL);
-    console.log("SCRAPER_TOKEN:", process.env.SCRAPER_TOKEN);
     if (!process.env.SITE_URL) {
         throw new Error('SITE_URL não definida');
     }
@@ -18,6 +16,7 @@ async function saveGroup(link, description = null, countryCode = null) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
             "X-SCRAPER-TOKEN": process.env.SCRAPER_TOKEN
         },
         body: JSON.stringify({
