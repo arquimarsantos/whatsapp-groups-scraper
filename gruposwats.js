@@ -4,6 +4,14 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
 async function saveGroup(link, description = null, countryCode = null) {
+    if (!process.env.SITE_URL) {
+        throw new Error('SITE_URL não definida');
+    }
+
+    if (!process.env.SCRAPER_TOKEN) {
+        throw new Error('SCRAPER_TOKEN não definido');
+    }
+    
     const response = await fetch(process.env.SITE_URL, {
         method: "POST",
         headers: {
