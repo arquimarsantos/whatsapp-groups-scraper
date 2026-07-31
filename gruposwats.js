@@ -64,7 +64,7 @@ export async function runScraper() {
             waitUntil: 'networkidle2'
         });
         
-        const groups = await page.evaluate(() => {
+        groups = await page.evaluate(() => {
             return Array.from(document.querySelectorAll('a.list-group-item'))
                 .filter(item => {
                     const flags = item.querySelectorAll('.flagx').length;
