@@ -8,12 +8,14 @@ const app = express();
 
 let scraperRunning = false;
 
+/*
 app.get('/', (req, res) => {
     res.send('Online');
 });
+*/
 
 
-app.get('/start-scraper', async (req, res) => {
+app.get('/', async (req, res) => {
 
     if (scraperRunning) {
         return res.send('Scraper já está rodando');
