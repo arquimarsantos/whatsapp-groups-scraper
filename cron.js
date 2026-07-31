@@ -3,7 +3,7 @@ import { runScraper } from './server.js';
 
 let running = false;
 
-cron.schedule('0 */2 * * *', async () => {
+cron.schedule('*/30 * * * *', async () => {
     if (running) {
         console.log('Scraper já está executando');
         return;
