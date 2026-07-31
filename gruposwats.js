@@ -39,23 +39,28 @@ async function saveGroup(link, description = null, countryCode = null) {
 }
 
 export async function runScraper() {
-    const browser = await puppeteer.launch({
+    let browser = await puppeteer.launch({
         headless: true,
-        args:[
+        args: [
             '--no-sandbox',
             '--disable-setuid-sandbox'
         ]
     });
-
-    const page = await browser.newPage();
-
-    await page.setUserAgent('Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36');
-    await page.setViewport({ width: 1366, height: 768 });
+            
+    let page = await browser.newPage();
+            
+    await page.setUserAgent(
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+    );
+    await page.setViewport({
+        width: 1366,
+        height: 768
+    });
 
     await page.goto('https://gruposwats.com', {
         waitUntil: 'networkidle2'
     });
-
+    
     const groups = await page.evaluate(() => {
         return Array.from(document.querySelectorAll('a.list-group-item'))
             .filter(item => {
@@ -83,9 +88,10 @@ export async function runScraper() {
             });
     });
 
+    await browser.close();
+
     if (!groups.length) {
         console.log("Nenhum grupo encontrado");
-        await browser.close();
         return;
     }
 
@@ -165,10 +171,40 @@ export async function runScraper() {
     }
 
     for (const group of selectedGroups) {
-        console.log("Processando:", group.title);
+        let browser;
+
+        try {
     
-        await processGroup(page, group);
+            browser = await puppeteer.launch({
+                headless: true,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox'
+                ]
+            });
     
+            const page = await browser.newPage();
+    
+            await page.setUserAgent(
+                'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+            );
+    
+            await page.setViewport({
+                width: 1366,
+                height: 768
+            });
+            
+            console.log("Processando:", group.title);
+    
+            await processGroup(page, group);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            if (browser) {
+                await browser.close();
+            }
+        }
+        
         const delay = Math.floor(
             Math.random() * (120000 - 30000) + 30000
         );
@@ -177,6 +213,4 @@ export async function runScraper() {
     
         await sleep(delay);
     }
-    
-    await browser.close();
 }
