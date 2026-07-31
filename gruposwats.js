@@ -181,3 +181,13 @@ for (const group of selectedGroups) {
 
 await browser.close();
 }
+
+runScraper()
+    .then(() => {
+        console.log("Scraper finalizado");
+        process.exit(0);
+    })
+    .catch(err => {
+        console.error("Erro no scraper:", err);
+        process.exit(1);
+    });
