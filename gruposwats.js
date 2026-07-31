@@ -54,7 +54,6 @@ export async function runScraper() {
                 '--disable-sync',
                 '--no-first-run',
                 '--disable-default-apps',
-            
                 '--disable-features=Translate,BackForwardCache',
                 '--mute-audio',
                 '--hide-scrollbars',
