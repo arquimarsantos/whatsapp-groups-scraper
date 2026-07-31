@@ -3,6 +3,10 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 puppeteer.use(StealthPlugin());
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function saveGroup(link, description = null, countryCode = null) {
     if (!process.env.SITE_URL) {
         throw new Error('SITE_URL não definida');
