@@ -46,7 +46,19 @@ export async function runScraper() {
             headless: true,
             args: [
                 '--no-sandbox',
-                '--disable-setuid-sandbox'
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions',
+                '--disable-background-networking',
+                '--disable-sync',
+                '--no-first-run',
+                '--disable-default-apps',
+            
+                '--disable-features=Translate,BackForwardCache',
+                '--mute-audio',
+                '--hide-scrollbars',
+                '--disable-popup-blocking'
             ]
         });
                 
@@ -103,7 +115,8 @@ export async function runScraper() {
 
     groups.sort(() => Math.random() - 0.5);
 
-    const amount = Math.floor(Math.random() * groups.length) + 1;
+    const maxGroups = Math.min(10, groups.length);
+    const amount = Math.floor(Math.random() * maxGroups) + 1;
 
     const selectedGroups = groups.slice(0, amount);
 
