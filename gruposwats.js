@@ -38,7 +38,7 @@ async function saveGroup(link, description = null, countryCode = null) {
     console.log(result);
 }
 
-(async () => {
+export async function runScraper() {
     const browser = await puppeteer.launch({
         headless: true,
         args:[
@@ -180,4 +180,4 @@ for (const group of selectedGroups) {
 }
 
 await browser.close();
-})();
+}
