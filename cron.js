@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { runScraper } from './server.js';
+import { runScraper } from './gruposwats.js';
 
 let running = false;
 
