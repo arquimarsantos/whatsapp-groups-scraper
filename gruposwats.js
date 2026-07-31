@@ -39,56 +39,62 @@ async function saveGroup(link, description = null, countryCode = null) {
 }
 
 export async function runScraper() {
-    let browser = await puppeteer.launch({
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox'
-        ]
-    });
-            
-    let page = await browser.newPage();
-            
-    await page.setUserAgent(
-        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-    );
-    await page.setViewport({
-        width: 1366,
-        height: 768
-    });
-
-    await page.goto('https://gruposwats.com', {
-        waitUntil: 'networkidle2'
-    });
+    let browser;
+    let groups = [];
+    try {
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+            ]
+        });
+                
+        const page = await browser.newPage();
+                
+        await page.setUserAgent(
+            'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+        );
+        await page.setViewport({
+            width: 1366,
+            height: 768
+        });
     
-    const groups = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('a.list-group-item'))
-            .filter(item => {
-                const flags = item.querySelectorAll('.flagx').length;
-                return flags < 2;
-            })
-            .map(item => {
-                const onclick = item.getAttribute('onclick') || '';
-                const match = onclick.match(/lnkgrupo\('(\d+)'\)/);
-
-                let countryCode = null;
-                const flagEl = item.querySelector('.flagx');
-                if (flagEl) {
-                    const flagMatch = flagEl.className.match(/flag-([a-z]{2})/i);
-                    if (flagMatch) {
-                        countryCode = flagMatch[1].toLowerCase();
+        await page.goto('https://gruposwats.com', {
+            waitUntil: 'networkidle2'
+        });
+        
+        const groups = await page.evaluate(() => {
+            return Array.from(document.querySelectorAll('a.list-group-item'))
+                .filter(item => {
+                    const flags = item.querySelectorAll('.flagx').length;
+                    return flags < 2;
+                })
+                .map(item => {
+                    const onclick = item.getAttribute('onclick') || '';
+                    const match = onclick.match(/lnkgrupo\('(\d+)'\)/);
+    
+                    let countryCode = null;
+                    const flagEl = item.querySelector('.flagx');
+                    if (flagEl) {
+                        const flagMatch = flagEl.className.match(/flag-([a-z]{2})/i);
+                        if (flagMatch) {
+                            countryCode = flagMatch[1].toLowerCase();
+                        }
                     }
-                }
-
-                return {
-                    title: item.innerText.trim(),
-                    groupId: match ? match[1] : null,
-                    countryCode
-                };
-            });
-    });
-
-    await browser.close();
+    
+                    return {
+                        title: item.innerText.trim(),
+                        groupId: match ? match[1] : null,
+                        countryCode
+                    };
+                });
+        });
+    } finally {
+        if (browser) {
+            await browser.close();
+        }
+    }
 
     if (!groups.length) {
         console.log("Nenhum grupo encontrado");
