@@ -79,69 +79,101 @@ async function saveGroup(link, description = null, countryCode = null) {
             });
     });
 
-    console.log("Grupo escolhido:");
-    console.log(groups[0]);
+    if (!groups.length) {
+        console.log("Nenhum grupo encontrado");
+        await browser.close();
+        return;
+    }
 
-    await Promise.all([
-        page.waitForNavigation({
+    groups.sort(() => Math.random() - 0.5);
+
+    const amount = Math.floor(Math.random() * groups.length) + 1;
+
+    const selectedGroups = groups.slice(0, amount);
+
+    console.log(`Serão enviados ${selectedGroups.length} grupos`);
+
+    async function processGroup(page, group) {
+    try {
+
+        await page.goto('https://gruposwats.com', {
             waitUntil: 'networkidle2'
-        }),
-        page.evaluate((id) => {
-            lnkgrupo(id);
-        }, groups[0].groupId)
-    ]);
+        });
 
-    let description = groups[0].title;
+        await Promise.all([
+            page.waitForNavigation({
+                waitUntil: 'networkidle2'
+            }).catch(() => {}),
 
-    const descriptionButton = await page.$('#masinfo span');
+            page.evaluate((id) => {
+                lnkgrupo(id);
+            }, group.groupId)
+        ]);
 
-    if (descriptionButton) {
-        description = await new Promise(async (resolve) => {
-            page.once('dialog', async dialog => {
-                const lines = dialog.message()
-                    .split('\n')
-                    .map(l => l.trim())
-                    .filter(Boolean);
+        let description = group.title;
 
-                lines.shift();
+        const descriptionButton = await page.$('#masinfo span');
 
-                const extractedDescription = lines
-                    .filter(line => !/^Ref:\s*\d+/i.test(line))
-                    .filter(line => line !== '-')
-                    .join('\n')
-                    .trim();
+        if (descriptionButton) {
+            description = await new Promise(async (resolve) => {
+                page.once('dialog', async dialog => {
+                    const lines = dialog.message()
+                        .split('\n')
+                        .map(l => l.trim())
+                        .filter(Boolean);
 
-                await dialog.accept();
+                    lines.shift();
 
-                resolve(extractedDescription || groups[0].title);
+                    const extractedDescription = lines
+                        .filter(line => !/^Ref:\s*\d+/i.test(line))
+                        .filter(line => line !== '-')
+                        .join('\n')
+                        .trim();
+
+                    await dialog.accept();
+
+                    resolve(extractedDescription || group.title);
+
+                });
+                await descriptionButton.click();
             });
 
-            await descriptionButton.click();
-        });
-    }
-
-    await page.waitForSelector('#privacidaddir');
-
-    await page.click('#privacidaddir');
-
-    await page.waitForSelector('#proceso1');
-
-    await page.click('#proceso1');
-
-    await page.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {});
-
-    const finalUrl = page.url();
-
-    await browser.close();
-
-    if (finalUrl.includes('chat.whatsapp.com')) {
-        try {
-            await saveGroup(finalUrl, description, groups[0].countryCode);
-        } catch (e) {
-            console.error(e.message);
         }
-    } else {
-        console.log('URL final não é um link do WhatsApp, ignorando');
-    }
+        await page.waitForSelector('#privacidaddir');
+        await page.click('#privacidaddir');
+        await page.waitForSelector('#proceso1');
+        await page.click('#proceso1');
 
+        await page.waitForNavigation({
+            waitUntil:'networkidle2'
+        }).catch(()=>{});
+
+        const finalUrl = page.url();
+
+        if (!finalUrl.includes('chat.whatsapp.com')) {
+            console.log("URL final não é um link do WhatsApp, ignorando");
+            return;
+        }
+
+        await saveGroup(finalUrl, description, group.countryCode);
+    } catch(e) {
+        console.error(e.message);
+    }
+}
+
+for (const group of selectedGroups) {
+    console.log("Processando:", group.title);
+
+    await processGroup(page, group);
+
+    const delay = Math.floor(
+        Math.random() * (120000 - 30000) + 30000
+    );
+
+    console.log(`Aguardando ${delay / 1000}s`);
+
+    await sleep(delay);
+}
+
+await browser.close();
 })();
