@@ -98,96 +98,85 @@ export async function runScraper() {
     console.log(`Serão enviados ${selectedGroups.length} grupos`);
 
     async function processGroup(page, group) {
-    try {
-
-        await page.goto('https://gruposwats.com', {
-            waitUntil: 'networkidle2'
-        });
-
-        await Promise.all([
-            page.waitForNavigation({
+        try {
+            await page.goto('https://gruposwats.com', {
                 waitUntil: 'networkidle2'
-            }).catch(() => {}),
-
-            page.evaluate((id) => {
-                lnkgrupo(id);
-            }, group.groupId)
-        ]);
-
-        let description = group.title;
-
-        const descriptionButton = await page.$('#masinfo span');
-
-        if (descriptionButton) {
-            description = await new Promise(async (resolve) => {
-                page.once('dialog', async dialog => {
-                    const lines = dialog.message()
-                        .split('\n')
-                        .map(l => l.trim())
-                        .filter(Boolean);
-
-                    lines.shift();
-
-                    const extractedDescription = lines
-                        .filter(line => !/^Ref:\s*\d+/i.test(line))
-                        .filter(line => line !== '-')
-                        .join('\n')
-                        .trim();
-
-                    await dialog.accept();
-
-                    resolve(extractedDescription || group.title);
-
-                });
-                await descriptionButton.click();
             });
-
+    
+            await Promise.all([
+                page.waitForNavigation({
+                    waitUntil: 'networkidle2'
+                }).catch(() => {}),
+    
+                page.evaluate((id) => {
+                    lnkgrupo(id);
+                }, group.groupId)
+            ]);
+    
+            let description = group.title;
+    
+            const descriptionButton = await page.$('#masinfo span');
+    
+            if (descriptionButton) {
+                description = await new Promise(async (resolve) => {
+                    page.once('dialog', async dialog => {
+                        const lines = dialog.message()
+                            .split('\n')
+                            .map(l => l.trim())
+                            .filter(Boolean);
+    
+                        lines.shift();
+    
+                        const extractedDescription = lines
+                            .filter(line => !/^Ref:\s*\d+/i.test(line))
+                            .filter(line => line !== '-')
+                            .join('\n')
+                            .trim();
+    
+                        await dialog.accept();
+    
+                        resolve(extractedDescription || group.title);
+    
+                    });
+                    await descriptionButton.click();
+                });
+    
+            }
+            await page.waitForSelector('#privacidaddir');
+            await page.click('#privacidaddir');
+            await page.waitForSelector('#proceso1');
+            await page.click('#proceso1');
+    
+            await page.waitForNavigation({
+                waitUntil:'networkidle2'
+            }).catch(()=>{});
+    
+            const finalUrl = page.url();
+    
+            if (!finalUrl.includes('chat.whatsapp.com')) {
+                console.log("URL final não é um link do WhatsApp, ignorando");
+                return;
+            }
+    
+            await saveGroup(finalUrl, description, group.countryCode);
+        } catch(e) {
+            console.error(e.message);
         }
-        await page.waitForSelector('#privacidaddir');
-        await page.click('#privacidaddir');
-        await page.waitForSelector('#proceso1');
-        await page.click('#proceso1');
-
-        await page.waitForNavigation({
-            waitUntil:'networkidle2'
-        }).catch(()=>{});
-
-        const finalUrl = page.url();
-
-        if (!finalUrl.includes('chat.whatsapp.com')) {
-            console.log("URL final não é um link do WhatsApp, ignorando");
-            return;
-        }
-
-        await saveGroup(finalUrl, description, group.countryCode);
-    } catch(e) {
-        console.error(e.message);
     }
+
+    for (const group of selectedGroups) {
+        console.log("Processando:", group.title);
+    
+        await processGroup(page, group);
+    
+        const delay = Math.floor(
+            Math.random() * (120000 - 30000) + 30000
+        );
+    
+        console.log(`Aguardando ${delay / 1000}s`);
+    
+        await sleep(delay);
+    }
+    
+    await browser.close();
 }
-
-for (const group of selectedGroups) {
-    console.log("Processando:", group.title);
-
-    await processGroup(page, group);
-
-    const delay = Math.floor(
-        Math.random() * (120000 - 30000) + 30000
-    );
-
-    console.log(`Aguardando ${delay / 1000}s`);
-
-    await sleep(delay);
-}
-
-await browser.close();
-}
-
-runScraper()
-    .then(() => {
-        console.log("Scraper finalizado");
-        process.exit(0);
-    })
-    .catch(err => {
-        console.error("Erro no scraper:", err);
-        process.exit(1);
-    });
