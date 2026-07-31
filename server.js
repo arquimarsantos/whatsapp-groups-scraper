@@ -1,4 +1,5 @@
 import express from 'express';
+import { runScraper } from './gruposwats.js';
 
 const app = express();
 
