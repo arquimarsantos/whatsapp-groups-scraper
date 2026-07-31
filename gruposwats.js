@@ -197,7 +197,18 @@ export async function runScraper() {
                 headless: true,
                 args: [
                     '--no-sandbox',
-                    '--disable-setuid-sandbox'
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--disable-extensions',
+                    '--disable-background-networking',
+                    '--disable-sync',
+                    '--no-first-run',
+                    '--disable-default-apps',
+                    '--disable-features=Translate,BackForwardCache',
+                    '--mute-audio',
+                    '--hide-scrollbars',
+                    '--disable-popup-blocking'
                 ]
             });
     
