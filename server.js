@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import { runScraper } from './gruposwats.js';
 
 const app = express();
 
