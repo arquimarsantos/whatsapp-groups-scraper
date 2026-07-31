@@ -8,4 +8,4 @@ RUN npm install
 
 COPY . .
 
-CMD ["node", "gruposwats.js"]
+CMD ["node", "server.js"]
