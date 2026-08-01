@@ -1,4 +1,3 @@
-import cron from 'node-cron';
 import { runScraper } from './gruposwats.js';
 
 let running = false;
@@ -23,7 +22,3 @@ async function executeScraper() {
 }
 
 executeScraper();
-
-cron.schedule('*/30 * * * *', executeScraper);
-
-console.log('Cron iniciado');
