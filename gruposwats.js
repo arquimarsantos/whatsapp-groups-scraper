@@ -185,7 +185,8 @@ export async function runScraper() {
     
             await saveGroup(finalUrl, description, group.countryCode);
         } catch(e) {
-            console.error(e.message);
+            //console.error(e.message);
+            console.error('ERRO:', e);
         }
     }
 
