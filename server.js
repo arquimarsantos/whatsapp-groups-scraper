@@ -10,6 +10,6 @@ app.get('/', (req, res) => {
     res.send('Scraper online');
 });
 
-app.listen(process.env.PORT || 1000, '0.0.0.0', () => {
+app.listen(process.env.PORT || 8000, '0.0.0.0', () => {
     console.log('Servidor iniciado');
 });
