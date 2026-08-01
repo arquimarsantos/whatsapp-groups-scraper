@@ -24,7 +24,6 @@ async function executeScraper() {
 
 //executeScraper();
 
-//cron.schedule('*/30 * * * *', executeScraper);
-cron.schedule('* * * * *', executeScraper);
+cron.schedule('*/30 * * * *', executeScraper);
 
 console.log('Cron iniciado');
