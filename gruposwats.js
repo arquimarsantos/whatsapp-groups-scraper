@@ -115,7 +115,7 @@ export async function runScraper() {
 
     groups.sort(() => Math.random() - 0.5);
 
-    const maxGroups = Math.min(10, groups.length);
+    const maxGroups = Math.min(1, groups.length);
     const amount = Math.floor(Math.random() * maxGroups) + 1;
 
     const selectedGroups = groups.slice(0, amount);
@@ -185,8 +185,7 @@ export async function runScraper() {
     
             await saveGroup(finalUrl, description, group.countryCode);
         } catch(e) {
-            //console.error(e.message);
-            console.error('ERRO:', e);
+            console.error(e);
         }
     }
 
