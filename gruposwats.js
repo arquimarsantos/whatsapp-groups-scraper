@@ -63,6 +63,23 @@ export async function runScraper() {
         });
                 
         const page = await browser.newPage();
+
+        await page.setRequestInterception(true);
+
+page.on('request', request => {
+    const resourceType = request.resourceType();
+
+    if (
+        resourceType === 'image' ||
+        resourceType === 'media' ||
+        resourceType === 'font' ||
+        resourceType === 'stylesheet'
+    ) {
+        request.abort();
+    } else {
+        request.continue();
+    }
+});
                 
         await page.setUserAgent(
             'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
@@ -115,7 +132,7 @@ export async function runScraper() {
 
     groups.sort(() => Math.random() - 0.5);
 
-    const maxGroups = Math.min(1, groups.length);
+    const maxGroups = Math.min(10, groups.length);
     const amount = Math.floor(Math.random() * maxGroups) + 1;
 
     const selectedGroups = groups.slice(0, amount);
@@ -214,6 +231,23 @@ export async function runScraper() {
             });
     
             const page = await browser.newPage();
+
+            await page.setRequestInterception(true);
+
+page.on('request', request => {
+    const resourceType = request.resourceType();
+
+    if (
+        resourceType === 'image' ||
+        resourceType === 'media' ||
+        resourceType === 'font' ||
+        resourceType === 'stylesheet'
+    ) {
+        request.abort();
+    } else {
+        request.continue();
+    }
+});
     
             await page.setUserAgent(
                 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
