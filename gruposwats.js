@@ -235,7 +235,8 @@ export async function runScraper() {
         }
         
         const delay = Math.floor(
-            Math.random() * (120000 - 30000) + 30000
+            // Math.random() * (120000 - 30000) + 30000 // 30s + 2m
+            Math.random() * (60000 - 30000) + 30000 // 30s + 1m
         );
     
         console.log(`Aguardando ${delay / 1000}s`);
