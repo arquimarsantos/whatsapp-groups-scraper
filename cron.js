@@ -22,7 +22,7 @@ async function executeScraper() {
     }
 }
 
-//executeScraper();
+executeScraper();
 
 cron.schedule('*/30 * * * *', executeScraper);
 
