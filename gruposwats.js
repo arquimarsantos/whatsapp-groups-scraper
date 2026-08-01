@@ -47,7 +47,8 @@ export async function runScraper() {
             headless: true,
             args: [
                 '--no-sandbox',
-                '--disable-setuid-sandbox',
+                '--disable-setuid-sandbox'
+                /*
                 '--disable-dev-shm-usage',
                 '--disable-gpu',
                 '--disable-extensions',
@@ -59,6 +60,7 @@ export async function runScraper() {
                 '--mute-audio',
                 '--hide-scrollbars',
                 '--disable-popup-blocking'
+                */
             ]
         });
                 
@@ -198,7 +200,8 @@ export async function runScraper() {
                 headless: true,
                 args: [
                     '--no-sandbox',
-                    '--disable-setuid-sandbox',
+                    '--disable-setuid-sandbox'
+                    /*
                     '--disable-dev-shm-usage',
                     '--disable-gpu',
                     '--disable-extensions',
@@ -210,6 +213,7 @@ export async function runScraper() {
                     '--mute-audio',
                     '--hide-scrollbars',
                     '--disable-popup-blocking'
+                    */
                 ]
             });
     
