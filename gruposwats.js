@@ -2,10 +2,11 @@ import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 puppeteer.use(StealthPlugin());
-
+/*
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+*/
 
 async function saveGroup(link, description = null, countryCode = null) {
     if (!process.env.SITE_URL) {
@@ -233,7 +234,7 @@ export async function runScraper() {
                 await browser.close();
             }
         }
-        
+        /*
         const delay = Math.floor(
             // Math.random() * (120000 - 30000) + 30000 // 30s + 2m
             Math.random() * (60000 - 30000) + 30000 // 30s + 1m
@@ -242,5 +243,6 @@ export async function runScraper() {
         console.log(`Aguardando ${delay / 1000}s`);
     
         await sleep(delay);
+        */
     }
 }
