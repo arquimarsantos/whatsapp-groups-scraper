@@ -4,12 +4,17 @@ import { runScraper } from './gruposwats.js';
 let running = false;
 
 async function executeScraper() {
-    if (running) return;
+    if (running) {
+        console.log('Scraper já está executando');
+        return;
+    }
 
     running = true;
 
     try {
+        console.log('Iniciando scraper...');
         await runScraper();
+        console.log('Scraper finalizado');
     } catch (e) {
         console.error(e.message);
     } finally {
@@ -20,3 +25,5 @@ async function executeScraper() {
 executeScraper();
 
 cron.schedule('*/30 * * * *', executeScraper);
+
+console.log('Cron iniciado');
