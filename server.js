@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import './cron.js';
+import './start.js';
 
 const app = express();
 
