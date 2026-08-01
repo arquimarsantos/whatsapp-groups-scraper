@@ -114,7 +114,7 @@ export async function runScraper() {
 
     groups.sort(() => Math.random() - 0.5);
 
-    const maxGroups = Math.min(5, groups.length);
+    const maxGroups = Math.min(10, groups.length);
     const amount = Math.floor(Math.random() * maxGroups) + 1;
 
     const selectedGroups = groups.slice(0, amount);
