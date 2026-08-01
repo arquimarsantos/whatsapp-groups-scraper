@@ -5,7 +5,7 @@ let running = false;
 
 async function executeScraper() {
     if (running) {
-        console.log('Scraper já está executando');
+        //console.log('Scraper já está executando');
         return;
     }
 
