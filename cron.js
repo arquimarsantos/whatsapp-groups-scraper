@@ -22,9 +22,8 @@ async function executeScraper() {
     }
 }
 
-//executeScraper();
+executeScraper();
 
 //cron.schedule('*/30 * * * *', executeScraper);
-cron.schedule('*/10 * * * *', executeScraper);
 
-console.log('Cron iniciado');
+//console.log('Cron iniciado');
