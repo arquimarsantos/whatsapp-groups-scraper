@@ -8,6 +8,25 @@ function sleep(ms) {
 }
 */
 
+async function optimizePage(page) {
+    await page.setRequestInterception(true);
+
+    page.on('request', request => {
+        const type = request.resourceType();
+
+        if (
+            type === 'image' ||
+            type === 'media' ||
+            type === 'font' ||
+            type === 'stylesheet'
+        ) {
+            request.abort();
+        } else {
+            request.continue();
+        }
+    });
+}
+
 async function saveGroup(link, description = null, countryCode = null) {
     if (!process.env.SITE_URL) {
         throw new Error('SITE_URL não definida');
@@ -64,22 +83,7 @@ export async function runScraper() {
                 
         const page = await browser.newPage();
 
-        await page.setRequestInterception(true);
-
-page.on('request', request => {
-    const resourceType = request.resourceType();
-
-    if (
-        resourceType === 'image' ||
-        resourceType === 'media' ||
-        resourceType === 'font' ||
-        resourceType === 'stylesheet'
-    ) {
-        request.abort();
-    } else {
-        request.continue();
-    }
-});
+        await optimizePage(page);
                 
         await page.setUserAgent(
             'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
@@ -232,22 +236,7 @@ page.on('request', request => {
     
             const page = await browser.newPage();
 
-            await page.setRequestInterception(true);
-
-page.on('request', request => {
-    const resourceType = request.resourceType();
-
-    if (
-        resourceType === 'image' ||
-        resourceType === 'media' ||
-        resourceType === 'font' ||
-        resourceType === 'stylesheet'
-    ) {
-        request.abort();
-    } else {
-        request.continue();
-    }
-});
+            await optimizePage(page);
     
             await page.setUserAgent(
                 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
