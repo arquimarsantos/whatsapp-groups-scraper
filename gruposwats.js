@@ -11,12 +11,9 @@ function sleep(ms) {
 
 async function optimizePage(page) {
     await page.setRequestInterception(true);
-
     page.on('request', request => {
         const type = request.resourceType();
-
         if (
-            type === 'image' ||
             type === 'media' ||
             type === 'font' ||
             type === 'stylesheet'
@@ -57,6 +54,103 @@ async function saveGroup(link, description = null, countryCode = null) {
     }
 
     console.log(result);
+}
+
+async function extractWhatsAppGroupInfo(page, link) {
+    try {
+        await page.goto(link, {
+            waitUntil: 'networkidle2',
+            timeout: 45000
+        });
+
+        await page.waitForSelector('meta[property="og:title"], h3, img, title', {
+            timeout: 15000
+        }).catch(() => null);
+
+        const data = await page.evaluate(() => {
+            let name = null;
+
+            const ogTitle = document.querySelector('meta[property="og:title"]');
+            if (ogTitle?.content) {
+                name = ogTitle.content.trim();
+            }
+            
+            if (!name || /don't have WhatsApp installed/i.test(name) || name.length < 3) {
+                const h3s = Array.from(document.querySelectorAll('h3'));
+                for (const h3 of h3s) {
+                    const text = (h3.innerText || '').trim().replace(/\s+/g, ' ');
+                    if (
+                        text.length >= 3 &&
+                        !/don't have WhatsApp installed/i.test(text) &&
+                        !/^group chat invite$/i.test(text)
+                    ) {
+                        name = text;
+                        break;
+                    }
+                }
+            }
+            
+            if (!name || /don't have WhatsApp installed/i.test(name)) {
+                const pageTitle = (document.title || '').trim();
+                if (pageTitle.length >= 3) {
+                    name = pageTitle;
+                }
+            }
+
+            let imgUrl = null;
+
+            const ogImage = document.querySelector('meta[property="og:image"]');
+            if (ogImage?.content?.includes('pps.whatsapp.net')) {
+                imgUrl = ogImage.content;
+            }
+
+            if (!imgUrl) {
+                const imgEl = document.querySelector('img[class*="_ari4"], img[class*="_9vx6"]');
+                if (imgEl?.src?.includes('pps.whatsapp.net')) {
+                    imgUrl = imgEl.src;
+                }
+            }
+
+            if (!imgUrl) {
+                const waImg = Array.from(document.querySelectorAll('img'))
+                    .find(i => i.src && i.src.includes('pps.whatsapp.net'));
+                if (waImg) imgUrl = waImg.src;
+            }
+            
+            const genericTitles = [
+                'whatsapp group invite'
+            ];
+
+            const nameLower = (name || '').toLowerCase().trim();
+            const isGenericName = !name || genericTitles.includes(nameLower);
+            const hasGroupImage = !!imgUrl;
+
+            const isValid = !isGenericName && hasGroupImage;
+
+            return {
+                name: isValid ? name : null,
+                imgUrl: isValid ? imgUrl : null,
+                isValid
+            };
+        });
+
+        if (!data.isValid || !data.name || data.name.length < 3) {
+            return { valid: false, name: null, imgUrl: null };
+        }
+
+        if ([...data.name].length > 50) {
+            data.name = [...data.name].slice(0, 50).join('');
+        }
+
+        return {
+            valid: true,
+            name: data.name,
+            imgUrl: data.imgUrl
+        };
+    } catch (err) {
+        console.error(err);
+        return { valid: false, name: null, imgUrl: null };
+    }
 }
 
 export async function runScraper() {
@@ -201,11 +295,24 @@ export async function runScraper() {
             const finalUrl = page.url();
     
             if (!finalUrl.includes('chat.whatsapp.com')) {
-                console.log("URL final não é um link do WhatsApp, ignorando");
+                console.log("URL final não é um link do WhatsApp");
                 return;
             }
-    
-            await saveGroup(finalUrl, description, group.countryCode);
+
+            const waInfo = await extractWhatsAppGroupInfo(page, finalUrl);
+
+            if (!waInfo.valid) {
+                console.log("Grupo inválido ou link redefinido");
+                return;
+            }
+            
+            await saveGroup(
+                finalUrl,
+                description,
+                group.countryCode,
+                waInfo.name,
+                waInfo.imgUrl
+            );
         } catch(e) {
             console.error(e);
         }
