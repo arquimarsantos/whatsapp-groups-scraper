@@ -53,9 +53,6 @@ async function saveGroup(link, description = null, countryCode = null) {
     const result = await response.text();
     
     if (!response.ok) {
-        console.error('Status:', response.status);
-        console.error('Headers:', [...response.headers.entries()]);
-        console.error('Resposta:', JSON.stringify(result));
         throw new Error(result);
     }
 
