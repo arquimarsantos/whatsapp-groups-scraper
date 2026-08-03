@@ -10,15 +10,6 @@ async function optimizePage(page) {
     await page.setRequestInterception(true);
     page.on('request', request => {
         const type = request.resourceType();
-        const url = request.url();
-        if (
-            url.includes('cloudflare') ||
-            url.includes('turnstile') ||
-            url.includes('challenges.cloudflare.com')
-        ) {
-            return request.continue();
-        }
-
         if (
             type === 'image' ||
             type === 'media' ||
@@ -29,29 +20,6 @@ async function optimizePage(page) {
             request.continue();
         }
     });
-}
-
-async function humanInteraction(page) {
-    await page.evaluate(async () => {
-        await new Promise(resolve => {
-            let total = 0;
-            const distance = 100;
-            const timer = setInterval(() => {
-                window.scrollBy(0, distance);
-                total += distance;
-                if (total >= 400) {
-                    clearInterval(timer);
-                    resolve();
-                }
-            }, 50);
-        });
-    });
-    
-    await page.mouse.move(100, 200);
-    await page.mouse.move(300, 400, { steps: 10 });
-    await page.mouse.move(500, 300, { steps: 8 });
-    
-    await new Promise(r => setTimeout(r, 1500));
 }
 
 async function saveGroup(link, title = '', description = '', countryCode = 'xx', imgUrl = '') {
@@ -89,8 +57,9 @@ async function saveGroup(link, title = '', description = '', countryCode = 'xx',
 
 async function createBrowser() {
     return await connect({
-        headless: true,
+        headless: false,
         turnstile: true,
+        disableXvfb: false,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -111,8 +80,7 @@ async function createBrowser() {
                 width: 1366,
                 height: 768
             }
-        },
-        disableXvfb: true,
+        }
         // ignoreAllFlags: false,
     });
 }
@@ -194,8 +162,6 @@ export async function runScraper() {
                     lnkgrupo(id);
                 }, group.groupId)
             ]);
-
-            await humanInteraction(page);
 
             let description = group.title;
 
