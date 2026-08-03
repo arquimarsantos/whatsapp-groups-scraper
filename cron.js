@@ -34,6 +34,7 @@ async function executeChecker() {
     }
     
     isCheckerRunning = true;
+    
     try {
         console.log('Iniciando checagem de links...');
         await runChecker();
