@@ -87,7 +87,7 @@ export async function runScraper() {
         const { browser: b, page } = await createBrowser();
         browser = b;
 
-        await optimizePage(page);
+        //await optimizePage(page);
 
         await page.setUserAgent(
             'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
@@ -232,7 +232,7 @@ export async function runScraper() {
             const { browser: b, page } = await createBrowser();
             browser = b;
 
-            await optimizePage(page);
+            //await optimizePage(page);
 
             await page.setUserAgent(
                 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
