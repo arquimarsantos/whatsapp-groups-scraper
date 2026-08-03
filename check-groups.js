@@ -128,7 +128,7 @@ export async function runChecker() {
                     width: 1366,
                     height: 768
                 }
-            }
+            },
             disableXvfb: true,
         });
 
