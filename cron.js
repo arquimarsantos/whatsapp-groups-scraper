@@ -1,15 +1,17 @@
 import cron from 'node-cron';
 import { runScraper } from './gruposwats.js';
+import { runChecker } from './check-groups.js';
 
-let running = false;
+let isScraperRunning = false;
+let isCheckerRunning = false;
 
 async function executeScraper() {
-    if (running) {
+    if (isScraperRunning) {
         //console.log('Scraper já está executando');
         return;
     }
 
-    running = true;
+    isScraperRunning = true;
 
     try {
         console.log('Iniciando scraper...');
@@ -18,12 +20,27 @@ async function executeScraper() {
     } catch (e) {
         console.error(e.message);
     } finally {
-        running = false;
+        isScraperRunning = false;
     }
 }
 
-executeScraper();
+async function executeChecker() {
+    if (isCheckerRunning) return;
+    
+    isCheckerRunning = true;
+    try {
+        console.log('Iniciando checagem de links...');
+        await runChecker();
+    } catch (e) {
+        console.error(e.message);
+    } finally {
+        isCheckerRunning = false;
+    }
+}
+
+//executeScraper();
 
 cron.schedule('*/30 * * * *', executeScraper);
+cron.schedule('0 */2 * * *', executeChecker);
 
 console.log('Cron iniciado');
