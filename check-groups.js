@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import mysql from 'mysql2/promise';
+import ftp from "basic-ftp";
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
