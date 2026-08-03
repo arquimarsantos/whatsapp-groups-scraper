@@ -83,7 +83,7 @@ async function createBrowser() {
                 height: 768
             }
         },
-        // disableXvfb: true,
+        disableXvfb: true,
         // ignoreAllFlags: false,
     });
 }
