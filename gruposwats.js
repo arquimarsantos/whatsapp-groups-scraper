@@ -28,7 +28,7 @@ async function optimizePage(page) {
     });
 }
 
-async function saveGroup(link, description = null, countryCode = null) {
+async function saveGroup(link, title = '', description = '', countryCode = 'xx', imgUrl = '') {
     if (!process.env.SITE_URL) {
         throw new Error('SITE_URL não definida');
     }
@@ -45,8 +45,10 @@ async function saveGroup(link, description = null, countryCode = null) {
         },
         body: JSON.stringify({
             link: link,
+            title: title,
             description: description,
-            country_code: countryCode
+            country_code: countryCode,
+            img_url: imgUrl
         })
     });
 
@@ -201,11 +203,27 @@ export async function runScraper() {
             const finalUrl = page.url();
     
             if (!finalUrl.includes('chat.whatsapp.com')) {
-                console.log("URL final não é um link do WhatsApp, ignorando");
+                console.log("URL final não é um link do WhatsApp");
+                return;
+            }
+
+            const groupData = await page.evaluate(() => {
+                const metaTitle = document.querySelector('meta[property="og:title"]');
+                const h3Title = document.querySelector('h3._9vd5._9scr');
+                let title = metaTitle ? metaTitle.content : (h3Title ? h3Title.innerText : null);
+                const metaImg = document.querySelector('meta[property="og:image"]');
+                const imgEl = document.querySelector('img[src*="pps.whatsapp.net"]');
+                let img = metaImg ? metaImg.content : (imgEl ? imgEl.src : null);
+                const isInvalid = !title || title.includes('Convite para grupo do WhatsApp') || title.includes('WhatsApp Group Invite');
+                return { title, img, isInvalid };
+            });
+
+            if (groupData.isInvalid) {
+                console.log(`Link inválido ou redefinido`);
                 return;
             }
     
-            await saveGroup(finalUrl, description, group.countryCode);
+            await saveGroup(finalUrl, groupData.title, description, group.countryCode, groupData.img);
         } catch(e) {
             console.error(e);
         }
