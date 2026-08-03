@@ -6,6 +6,10 @@ let isScraperRunning = false;
 let isCheckerRunning = false;
 
 async function executeScraper() {
+    if (isCheckerRunning) {
+        return;
+    }
+    
     if (isScraperRunning) {
         //console.log('Scraper já está executando');
         return;
@@ -16,32 +20,34 @@ async function executeScraper() {
     try {
         console.log('Iniciando scraper...');
         await runScraper();
-        console.log('Scraper finalizado');
+        //console.log('Scraper finalizado');
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
     } finally {
         isScraperRunning = false;
     }
 }
 
 async function executeChecker() {
-    if (isCheckerRunning) return;
+    if (isCheckerRunning || isScraperRunning) {
+        return;
+    }
     
     isCheckerRunning = true;
     try {
         console.log('Iniciando checagem de links...');
         await runChecker();
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
     } finally {
         isCheckerRunning = false;
     }
 }
 
 //executeScraper();
-//executeChecker();
+executeChecker();
 
-cron.schedule('*/30 * * * *', executeScraper);
-cron.schedule('0 */2 * * *', executeChecker);
+//cron.schedule('*/30 * * * *', executeScraper);
+//cron.schedule('0 */2 * * *', executeChecker);
 
 console.log('Cron iniciado');
