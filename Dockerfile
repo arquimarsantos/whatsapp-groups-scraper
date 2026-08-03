@@ -2,8 +2,6 @@ FROM node:22-slim
 
 RUN apt-get update && apt-get install -y \
     chromium \
-    xvfb \
-    xauth \
     fonts-liberation \
     libnss3 \
     libatk-bridge2.0-0 \
@@ -28,4 +26,4 @@ COPY . .
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-CMD ["xvfb-run", "--auto-servernum", "--server-args=-screen 0 1366x768x24 -ac", "node", "server.js"]
+CMD ["node", "server.js"]
