@@ -57,7 +57,7 @@ async function saveGroup(link, title = '', description = '', countryCode = 'xx',
 
 async function createBrowser() {
     return await connect({
-        headless: true,
+        headless: false,
         turnstile: true,
         disableXvfb: true,
         args: [
@@ -73,7 +73,8 @@ async function createBrowser() {
             '--disable-features=Translate,BackForwardCache',
             '--mute-audio',
             '--hide-scrollbars',
-            '--disable-popup-blocking'
+            '--disable-popup-blocking',
+            '--window-size=1920,1080'
         ]
         // ignoreAllFlags: false,
     });
