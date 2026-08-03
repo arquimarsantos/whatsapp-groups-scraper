@@ -40,7 +40,34 @@ async function optimizePage(page) {
     });
 }
 
+async function deleteImg(filename) {
+    if (!filename) {
+        return;
+    }
+
+    const client = new ftp.Client();
+
+    try {
+        await client.access({
+            host: process.env.FTP_HOST,
+            user: process.env.FTP_USER,
+            password: process.env.FTP_PASSWORD,
+            secure: false
+        });
+        
+        const filePath = `/domains/linkwhatss.com/public_html/img/groups/${filename}`;
+
+        await client.remove(filePath);
+
+    } catch (err) {
+        console.error(err);
+    } finally {
+        client.close();
+    }
+}
+
 async function deleteGroup(group) {
+    /*
     if (group.img) {
         const imgPath = path.join(__dirname, '..', 'img', 'groups', group.img);
 
@@ -49,6 +76,8 @@ async function deleteGroup(group) {
             await fs.unlink(imgPath);
         } catch (e) {}
     }
+    */
+    await deleteImg(group.img);
 
     await pool.execute(
         'DELETE FROM whatsapp_groups WHERE id = ? AND user_id IS NULL',
