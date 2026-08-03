@@ -63,7 +63,7 @@ async function saveGroup(link, title = '', description = '', countryCode = 'xx',
 
 async function createBrowser() {
     return await connect({
-        headless: false,
+        headless: true,
         turnstile: true,
         args: [
             '--no-sandbox',
