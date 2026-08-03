@@ -129,7 +129,7 @@ export async function runChecker() {
                     height: 768
                 }
             }
-            // disableXvfb: true,
+            disableXvfb: true,
         });
 
         browser = b;
