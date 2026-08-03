@@ -89,9 +89,9 @@ export async function runScraper() {
 
         await optimizePage(page);
 
-        //await page.setUserAgent(
-            //'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-        //);
+        await page.setUserAgent(
+            'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+        );
 
         await page.goto('https://gruposwats.com', {
             waitUntil: 'networkidle2'
@@ -234,9 +234,9 @@ export async function runScraper() {
 
             await optimizePage(page);
 
-            //await page.setUserAgent(
-                //'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-            //);
+            await page.setUserAgent(
+                'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+            );
 
             console.log("Processando:", group.title);
 
