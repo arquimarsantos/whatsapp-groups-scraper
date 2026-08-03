@@ -38,8 +38,8 @@ async function executeChecker() {
     }
 }
 
-executeScraper();
-//executeChecker();
+//executeScraper();
+executeChecker();
 
 //cron.schedule('*/30 * * * *', executeScraper);
 //cron.schedule('0 */2 * * *', executeChecker);
