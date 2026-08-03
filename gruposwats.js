@@ -222,6 +222,11 @@ export async function runScraper() {
                 console.log(`Link inválido ou redefinido`);
                 return;
             }
+
+            if (!groupData.img || !groupData.img.includes('pps.whatsapp.net')) {
+                console.log('Grupo sem foto própria');
+                return;
+            }
     
             await saveGroup(finalUrl, groupData.title, description, group.countryCode, groupData.img);
         } catch(e) {
