@@ -31,6 +31,29 @@ async function optimizePage(page) {
     });
 }
 
+async function humanInteraction(page) {
+    await page.evaluate(async () => {
+        await new Promise(resolve => {
+            let total = 0;
+            const distance = 100;
+            const timer = setInterval(() => {
+                window.scrollBy(0, distance);
+                total += distance;
+                if (total >= 400) {
+                    clearInterval(timer);
+                    resolve();
+                }
+            }, 50);
+        });
+    });
+    
+    await page.mouse.move(100, 200);
+    await page.mouse.move(300, 400, { steps: 10 });
+    await page.mouse.move(500, 300, { steps: 8 });
+    
+    await new Promise(r => setTimeout(r, 1500));
+}
+
 async function saveGroup(link, title = '', description = '', countryCode = 'xx', imgUrl = '') {
     if (!process.env.SITE_URL) {
         throw new Error('SITE_URL não definida');
@@ -207,6 +230,8 @@ export async function runScraper() {
             await page.waitForNavigation({
                 waitUntil: 'networkidle2'
             }).catch(() => {});
+
+            await humanInteraction(page);
 
             const finalUrl = page.url();
 
