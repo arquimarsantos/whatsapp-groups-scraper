@@ -149,7 +149,7 @@ export async function runChecker() {
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
             } catch (err) {
-                console.error(e);
+                console.error(err);
                 continue; 
             }
         }
