@@ -10,6 +10,15 @@ async function optimizePage(page) {
     await page.setRequestInterception(true);
     page.on('request', request => {
         const type = request.resourceType();
+        const url = request.url();
+        if (
+            url.includes('cloudflare') ||
+            url.includes('turnstile') ||
+            url.includes('challenges.cloudflare.com')
+        ) {
+            return request.continue();
+        }
+
         if (
             type === 'image' ||
             type === 'media' ||
