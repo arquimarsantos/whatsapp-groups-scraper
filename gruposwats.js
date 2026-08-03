@@ -1,7 +1,4 @@
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-
-puppeteer.use(StealthPlugin());
+import { connect } from 'puppeteer-real-browser';
 
 /*
 function sleep(ms) {
