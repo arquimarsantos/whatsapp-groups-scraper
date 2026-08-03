@@ -195,6 +195,8 @@ export async function runScraper() {
                 }, group.groupId)
             ]);
 
+            await humanInteraction(page);
+
             let description = group.title;
 
             const descriptionButton = await page.$('#masinfo span');
@@ -230,8 +232,6 @@ export async function runScraper() {
             await page.waitForNavigation({
                 waitUntil: 'networkidle2'
             }).catch(() => {});
-
-            await humanInteraction(page);
 
             const finalUrl = page.url();
 
