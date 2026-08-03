@@ -8,15 +8,12 @@ function sleep(ms) {
 
 async function optimizePage(page) {
     await page.setRequestInterception(true);
-
     page.on('request', request => {
         const type = request.resourceType();
-
         if (
             type === 'image' ||
             type === 'media' ||
-            type === 'font' ||
-            type === 'stylesheet'
+            type === 'font'
         ) {
             request.abort();
         } else {
