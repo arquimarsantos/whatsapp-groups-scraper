@@ -40,7 +40,9 @@ async function executeChecker() {
 
 //executeScraper();
 
-cron.schedule('*/30 * * * *', executeScraper);
-cron.schedule('0 */2 * * *', executeChecker);
+executeChecker();
+
+//cron.schedule('*/30 * * * *', executeScraper);
+//cron.schedule('0 */2 * * *', executeChecker);
 
 console.log('Cron iniciado');
