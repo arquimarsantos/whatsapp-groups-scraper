@@ -149,7 +149,7 @@ export async function runChecker() {
             try {
                 await page.goto(group.link, {
                     waitUntil: 'domcontentloaded',
-                    timeout: 15000
+                    timeout: 60000
                 });
 
                 const isValid = await page.evaluate(() => {
