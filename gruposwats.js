@@ -1,4 +1,5 @@
-import { connect } from 'puppeteer-real-browser';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 /*
 function sleep(ms) {
@@ -8,12 +9,15 @@ function sleep(ms) {
 
 async function optimizePage(page) {
     await page.setRequestInterception(true);
+
     page.on('request', request => {
         const type = request.resourceType();
+
         if (
             type === 'image' ||
             type === 'media' ||
-            type === 'font'
+            type === 'font' ||
+            type === 'stylesheet'
         ) {
             request.abort();
         } else {
@@ -55,48 +59,45 @@ async function saveGroup(link, title = '', description = '', countryCode = 'xx',
     console.log(result);
 }
 
-async function createBrowser() {
-    return await connect({
-        headless: true,
-        turnstile: true,
-        disableXvfb: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-            '--disable-extensions',
-            '--disable-background-networking',
-            '--disable-sync',
-            '--no-first-run',
-            '--disable-default-apps',
-            '--disable-features=Translate,BackForwardCache',
-            '--mute-audio',
-            '--hide-scrollbars',
-            '--disable-popup-blocking'
-        ]
-        // ignoreAllFlags: false,
-    });
-}
-
 export async function runScraper() {
     let browser;
     let groups = [];
-
     try {
-        const { browser: b, page } = await createBrowser();
-        browser = b;
+        browser = await puppeteer.launch({
+            headless: false,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions',
+                '--disable-background-networking',
+                '--disable-sync',
+                '--no-first-run',
+                '--disable-default-apps',
+                '--disable-features=Translate,BackForwardCache',
+                '--mute-audio',
+                '--hide-scrollbars',
+                '--disable-popup-blocking'
+            ]
+        });
+                
+        const page = await browser.newPage();
 
         await optimizePage(page);
-
+         
         await page.setUserAgent(
             'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
         );
-
+        await page.setViewport({
+            width: 1366,
+            height: 768
+        });
+    
         await page.goto('https://gruposwats.com', {
             waitUntil: 'networkidle2'
         });
-
+        
         groups = await page.evaluate(() => {
             return Array.from(document.querySelectorAll('a.list-group-item'))
                 .filter(item => {
@@ -106,7 +107,7 @@ export async function runScraper() {
                 .map(item => {
                     const onclick = item.getAttribute('onclick') || '';
                     const match = onclick.match(/lnkgrupo\('(\d+)'\)/);
-
+    
                     let countryCode = null;
                     const flagEl = item.querySelector('.flagx');
                     if (flagEl) {
@@ -115,7 +116,7 @@ export async function runScraper() {
                             countryCode = flagMatch[1].toLowerCase();
                         }
                     }
-
+    
                     return {
                         title: item.innerText.trim(),
                         groupId: match ? match[1] : null,
@@ -135,8 +136,10 @@ export async function runScraper() {
     }
 
     groups.sort(() => Math.random() - 0.5);
+
     const maxGroups = Math.min(10, groups.length);
     const amount = Math.floor(Math.random() * maxGroups) + 1;
+
     const selectedGroups = groups.slice(0, amount);
 
     console.log(`Serão enviados ${selectedGroups.length} grupos`);
@@ -146,21 +149,21 @@ export async function runScraper() {
             await page.goto('https://gruposwats.com', {
                 waitUntil: 'networkidle2'
             });
-
+    
             await Promise.all([
                 page.waitForNavigation({
                     waitUntil: 'networkidle2'
                 }).catch(() => {}),
-
+    
                 page.evaluate((id) => {
                     lnkgrupo(id);
                 }, group.groupId)
             ]);
-
+    
             let description = group.title;
-
+    
             const descriptionButton = await page.$('#masinfo span');
-
+    
             if (descriptionButton) {
                 description = await new Promise(async (resolve) => {
                     page.once('dialog', async dialog => {
@@ -168,33 +171,35 @@ export async function runScraper() {
                             .split('\n')
                             .map(l => l.trim())
                             .filter(Boolean);
-
+    
                         lines.shift();
-
+    
                         const extractedDescription = lines
                             .filter(line => !/^Ref:\s*\d+/i.test(line))
                             .filter(line => line !== '-')
                             .join('\n')
                             .trim();
-
+    
                         await dialog.accept();
-
+    
                         resolve(extractedDescription || group.title);
+    
                     });
                     await descriptionButton.click();
                 });
+    
             }
-
             await page.waitForSelector('#privacidaddir');
             await page.click('#privacidaddir');
             await page.waitForSelector('#proceso1');
             await page.click('#proceso1');
+
             await page.waitForNavigation({
-                waitUntil: 'networkidle2'
-            }).catch(() => {});
-
+                waitUntil:'networkidle2'
+            }).catch(()=>{});
+    
             const finalUrl = page.url();
-
+    
             if (!finalUrl.includes('chat.whatsapp.com')) {
                 console.log("URL final não é um link do WhatsApp");
                 return;
@@ -215,31 +220,56 @@ export async function runScraper() {
                 console.log(`Link inválido ou redefinido`);
                 return;
             }
+
             if (!groupData.img || !groupData.img.includes('pps.whatsapp.net')) {
                 console.log('Grupo sem foto própria');
                 return;
             }
-
+    
             await saveGroup(finalUrl, groupData.title, description, group.countryCode, groupData.img);
-        } catch (e) {
+        } catch(e) {
             console.error(e);
         }
     }
 
     for (const group of selectedGroups) {
         let browser;
+
         try {
-            const { browser: b, page } = await createBrowser();
-            browser = b;
+            browser = await puppeteer.launch({
+                headless: false,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--disable-extensions',
+                    '--disable-background-networking',
+                    '--disable-sync',
+                    '--no-first-run',
+                    '--disable-default-apps',
+                    '--disable-features=Translate,BackForwardCache',
+                    '--mute-audio',
+                    '--hide-scrollbars',
+                    '--disable-popup-blocking'
+                ]
+            });
+    
+            const page = await browser.newPage();
 
             await optimizePage(page);
 
             await page.setUserAgent(
                 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
             );
-
+    
+            await page.setViewport({
+                width: 1366,
+                height: 768
+            });
+            
             console.log("Processando:", group.title);
-
+    
             await processGroup(page, group);
         } catch (e) {
             console.error(e);
@@ -248,15 +278,14 @@ export async function runScraper() {
                 await browser.close();
             }
         }
-
         /*
         const delay = Math.floor(
             // Math.random() * (120000 - 30000) + 30000 // 30s + 2m
             Math.random() * (60000 - 30000) + 30000 // 30s + 1m
         );
-
+    
         console.log(`Aguardando ${delay / 1000}s`);
-
+    
         await sleep(delay);
         */
     }
