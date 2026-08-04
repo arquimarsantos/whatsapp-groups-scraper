@@ -7,6 +7,7 @@ function sleep(ms) {
 }
 */
 
+/*
 async function optimizePage(page) {
     await page.setRequestInterception(true);
 
@@ -25,6 +26,7 @@ async function optimizePage(page) {
         }
     });
 }
+*/
 
 async function saveGroup(link, title = '', description = '', countryCode = 'xx', imgUrl = '') {
     if (!process.env.SITE_URL) {
@@ -84,14 +86,16 @@ export async function runScraper() {
                 
         const page = await browser.newPage();
 
-        await optimizePage(page);
+        //await optimizePage(page);
          
         await page.setUserAgent(
             'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
         );
+
         await page.setViewport({
             width: 1366,
-            height: 768
+            height: 768,
+            isMobile: true
         });
     
         await page.goto('https://gruposwats.com', {
@@ -257,7 +261,7 @@ export async function runScraper() {
     
             const page = await browser.newPage();
 
-            await optimizePage(page);
+            //await optimizePage(page);
 
             await page.setUserAgent(
                 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
@@ -265,7 +269,8 @@ export async function runScraper() {
     
             await page.setViewport({
                 width: 1366,
-                height: 768
+                height: 768,
+                isMobile: true
             });
             
             console.log("Processando:", group.title);
