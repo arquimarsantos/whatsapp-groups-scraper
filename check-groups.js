@@ -1,9 +1,12 @@
-import { connect } from 'puppeteer-real-browser';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import mysql from 'mysql2/promise';
-//import ftp from "basic-ftp";
+import ftp from "basic-ftp";
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+puppeteer.use(StealthPlugin());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,7 +78,7 @@ async function deleteGroup(group) {
         } catch (e) {}
     }
     */
-    
+
     await deleteImg(group.img);
 
     await pool.execute(
@@ -105,9 +108,8 @@ export async function runChecker() {
 
         console.log(`${groups.length} grupos para verificar`);
 
-        const { browser: b, page } = await connect({
+        browser = await puppeteer.launch({
             headless: true,
-            turnstile: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -122,23 +124,21 @@ export async function runChecker() {
                 '--mute-audio',
                 '--hide-scrollbars',
                 '--disable-popup-blocking'
-            ],
-            connectOption: {
-                defaultViewport: {
-                    width: 1366,
-                    height: 768
-                }
-            },
-            disableXvfb: true,
+            ]
         });
 
-        browser = b;
+        const page = await browser.newPage();
 
         await optimizePage(page);
 
         await page.setUserAgent(
             'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
         );
+
+        await page.setViewport({
+            width: 1366,
+            height: 768
+        });
 
         for (const group of groups) {
             total++;
@@ -154,7 +154,9 @@ export async function runChecker() {
                 });
 
                 const isValid = await page.evaluate(() => {
-                    const metaTitle = document.querySelector('meta[property="og:title"]');
+                    const metaTitle = document.querySelector(
+                        'meta[property="og:title"]'
+                    );
 
                     if (metaTitle) {
                         const title = metaTitle.content.trim();
@@ -173,7 +175,9 @@ export async function runChecker() {
                         return true;
                     }
 
-                    const h3Title = document.querySelector('h3._9vd5._9scr');
+                    const h3Title = document.querySelector(
+                        'h3._9vd5._9scr'
+                    );
 
                     if (h3Title && h3Title.innerText.trim() === '') {
                         return false;
