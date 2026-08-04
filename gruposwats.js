@@ -90,9 +90,19 @@ export async function runScraper() {
 
         //await optimizePage(page);
 
+        //await page.setUserAgent(
+            //'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+        //);
+
         await page.setUserAgent(
-            'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-        );
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+);
+
+// Randomize viewport slightly to avoid fingerprinting from consistent dimensions
+await page.setViewport({
+  width: Math.floor(1024 + Math.random() * 100),
+  height: Math.floor(768 + Math.random() * 100),
+});
 
         await page.goto('https://gruposwats.com', {
             waitUntil: 'networkidle2'
@@ -235,9 +245,19 @@ export async function runScraper() {
 
             //await optimizePage(page);
 
+            //await page.setUserAgent(
+                //'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+            //);
+
             await page.setUserAgent(
-                'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-            );
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+);
+
+// Randomize viewport slightly to avoid fingerprinting from consistent dimensions
+await page.setViewport({
+  width: Math.floor(1024 + Math.random() * 100),
+  height: Math.floor(768 + Math.random() * 100),
+});
 
             console.log("Processando:", group.title);
 
