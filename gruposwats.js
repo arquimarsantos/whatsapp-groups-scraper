@@ -93,8 +93,8 @@ export async function runScraper() {
         );
 
         await page.setViewport({
-            width: 1366,
-            height: 768,
+            width: 384,
+            height: 699,
             isMobile: true
         });
     
@@ -268,8 +268,8 @@ export async function runScraper() {
             );
     
             await page.setViewport({
-                width: 1366,
-                height: 768,
+                width: 384,
+                height: 699,
                 isMobile: true
             });
             
