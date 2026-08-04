@@ -64,7 +64,7 @@ export async function runScraper() {
     let groups = [];
     try {
         browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -237,7 +237,7 @@ export async function runScraper() {
 
         try {
             browser = await puppeteer.launch({
-                headless: false,
+                headless: true,
                 args: [
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
