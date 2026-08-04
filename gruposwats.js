@@ -73,8 +73,7 @@ async function createBrowser() {
             '--disable-features=Translate,BackForwardCache',
             '--mute-audio',
             '--hide-scrollbars',
-            '--disable-popup-blocking',
-            '--window-size=1920,1080'
+            '--disable-popup-blocking'
         ]
         // ignoreAllFlags: false,
     });
@@ -88,21 +87,11 @@ export async function runScraper() {
         const { browser: b, page } = await createBrowser();
         browser = b;
 
-        //await optimizePage(page);
-
-        //await page.setUserAgent(
-            //'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-        //);
+        await optimizePage(page);
 
         await page.setUserAgent(
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-);
-
-// Randomize viewport slightly to avoid fingerprinting from consistent dimensions
-await page.setViewport({
-  width: Math.floor(1024 + Math.random() * 100),
-  height: Math.floor(768 + Math.random() * 100),
-});
+            'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+        );
 
         await page.goto('https://gruposwats.com', {
             waitUntil: 'networkidle2'
@@ -243,21 +232,11 @@ await page.setViewport({
             const { browser: b, page } = await createBrowser();
             browser = b;
 
-            //await optimizePage(page);
-
-            //await page.setUserAgent(
-                //'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-            //);
+            await optimizePage(page);
 
             await page.setUserAgent(
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-);
-
-// Randomize viewport slightly to avoid fingerprinting from consistent dimensions
-await page.setViewport({
-  width: Math.floor(1024 + Math.random() * 100),
-  height: Math.floor(768 + Math.random() * 100),
-});
+                'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+            );
 
             console.log("Processando:", group.title);
 
