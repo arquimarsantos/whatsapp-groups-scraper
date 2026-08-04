@@ -136,8 +136,9 @@ export async function runChecker() {
         );
 
         await page.setViewport({
-            width: 1366,
-            height: 768
+            width: 384,
+            height: 699,
+            isMobile: true
         });
 
         for (const group of groups) {
