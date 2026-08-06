@@ -28,6 +28,7 @@ async function executeScraper() {
     }
 }
 
+/*
 async function executeChecker() {
     if (isCheckerRunning || isScraperRunning) {
         return;
@@ -44,6 +45,7 @@ async function executeChecker() {
         isCheckerRunning = false;
     }
 }
+*/
 
 executeScraper();
 //executeChecker();
