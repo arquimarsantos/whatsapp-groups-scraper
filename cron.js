@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { runScraper } from './gruposwats.js';
-//import { runChecker } from './check-groups.js';
+import { runChecker } from './check-groups.js';
 
 let isScraperRunning = false;
 let isCheckerRunning = false;
@@ -28,7 +28,6 @@ async function executeScraper() {
     }
 }
 
-/*
 async function executeChecker() {
     if (isCheckerRunning || isScraperRunning) {
         return;
@@ -45,7 +44,6 @@ async function executeChecker() {
         isCheckerRunning = false;
     }
 }
-*/
 
 executeScraper();
 //executeChecker();
