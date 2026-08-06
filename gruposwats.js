@@ -10,7 +10,7 @@ function sleep(ms) {
 
 const getBrowserConfig = () => ({
     headless: true,
-    turnstile: true,
+    turnstile: false,
     disableXvfb: true,
     ignoreAllFlags: false
 });
