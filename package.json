@@ -6,7 +6,7 @@
     "express": "^5.2.1",
     "mysql2": "^3.23.2",
     "node-cron": "^4.6.0",
-    "puppeteer": "^25.5.0"
+    "puppeteer": "^25.5.0",
     "puppeteer-real-browser": "^1.4.4"
   }
 }
