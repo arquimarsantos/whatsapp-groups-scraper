@@ -223,3 +223,5 @@ export async function runScraper() {
         */
     }
 }
+
+runScraper();
