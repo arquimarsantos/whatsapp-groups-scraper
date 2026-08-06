@@ -1,5 +1,7 @@
 import { connect } from 'puppeteer-real-browser';
+import puppeteer from 'puppeteer';
 
+process.env.CHROME_PATH = puppeteer.executablePath();
 /*
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
