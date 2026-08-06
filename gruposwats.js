@@ -1,6 +1,5 @@
-import { connect } from 'puppeteer-real-browser';
-
-process.env.CHROME_PATH = process.env.CHROME_PATH || '/usr/bin/google-chrome-stable'
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 /*
 function sleep(ms) {
@@ -8,12 +7,26 @@ function sleep(ms) {
 }
 */
 
-const getBrowserConfig = () => ({
-    headless: true,
-    turnstile: false,
-    disableXvfb: true,
-    ignoreAllFlags: false
-});
+/*
+async function optimizePage(page) {
+    await page.setRequestInterception(true);
+
+    page.on('request', request => {
+        const type = request.resourceType();
+
+        if (
+            type === 'image' ||
+            type === 'media' ||
+            type === 'font' ||
+            type === 'stylesheet'
+        ) {
+            request.abort();
+        } else {
+            request.continue();
+        }
+    });
+}
+*/
 
 async function saveGroup(link, title = '', description = '', countryCode = 'xx', imgUrl = '') {
     if (!process.env.SITE_URL) {
@@ -49,14 +62,41 @@ async function saveGroup(link, title = '', description = '', countryCode = 'xx',
 }
 
 export async function runScraper() {
-    let mainBrowser;
+    let browser;
     let groups = [];
     try {
-        // Inicializando o puppeteer-real-browser
-        const { browser, page } = await connect(getBrowserConfig());
-        mainBrowser = browser;
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions',
+                '--disable-background-networking',
+                '--disable-sync',
+                '--no-first-run',
+                '--disable-default-apps',
+                '--disable-features=Translate,BackForwardCache',
+                '--mute-audio',
+                '--hide-scrollbars',
+                '--disable-popup-blocking'
+            ]
+        });
+                
+        const page = await browser.newPage();
 
-        // await optimizePage(page); // Se for usar, lembre-se de descomentar a função
+        //await optimizePage(page);
+         
+        await page.setUserAgent(
+            'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+        );
+
+        await page.setViewport({
+            width: 384,
+            height: 699,
+            isMobile: true
+        });
     
         await page.goto('https://gruposwats.com', {
             waitUntil: 'networkidle2'
@@ -89,8 +129,8 @@ export async function runScraper() {
                 });
         });
     } finally {
-        if (mainBrowser) {
-            await mainBrowser.close();
+        if (browser) {
+            await browser.close();
         }
     }
 
@@ -197,11 +237,41 @@ export async function runScraper() {
     }
 
     for (const group of selectedGroups) {
-        let currentBrowser;
+        let browser;
 
         try {
-            const { browser, page } = await connect(getBrowserConfig());
-            currentBrowser = browser;
+            browser = await puppeteer.launch({
+                headless: true,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--disable-extensions',
+                    '--disable-background-networking',
+                    '--disable-sync',
+                    '--no-first-run',
+                    '--disable-default-apps',
+                    '--disable-features=Translate,BackForwardCache',
+                    '--mute-audio',
+                    '--hide-scrollbars',
+                    '--disable-popup-blocking'
+                ]
+            });
+    
+            const page = await browser.newPage();
+
+            //await optimizePage(page);
+
+            await page.setUserAgent(
+                'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
+            );
+    
+            await page.setViewport({
+                width: 384,
+                height: 699,
+                isMobile: true
+            });
             
             console.log("Processando:", group.title);
     
@@ -209,8 +279,8 @@ export async function runScraper() {
         } catch (e) {
             console.error(e);
         } finally {
-            if (currentBrowser) {
-                await currentBrowser.close();
+            if (browser) {
+                await browser.close();
             }
         }
         /*
