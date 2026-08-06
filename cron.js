@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { runScraper } from './gruposwats.js';
-import { runChecker } from './check-groups.js';
+//import { runChecker } from './check-groups.js';
 
 let isScraperRunning = false;
 let isCheckerRunning = false;
