@@ -1,5 +1,4 @@
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { connect } from 'puppeteer-real-browser';
 
 /*
 function sleep(ms) {
@@ -7,26 +6,12 @@ function sleep(ms) {
 }
 */
 
-/*
-async function optimizePage(page) {
-    await page.setRequestInterception(true);
-
-    page.on('request', request => {
-        const type = request.resourceType();
-
-        if (
-            type === 'image' ||
-            type === 'media' ||
-            type === 'font' ||
-            type === 'stylesheet'
-        ) {
-            request.abort();
-        } else {
-            request.continue();
-        }
-    });
-}
-*/
+const getBrowserConfig = () => ({
+    headless: true,
+    turnstile: true,
+    disableXvfb: true,
+    ignoreAllFlags: false
+});
 
 async function saveGroup(link, title = '', description = '', countryCode = 'xx', imgUrl = '') {
     if (!process.env.SITE_URL) {
@@ -62,41 +47,14 @@ async function saveGroup(link, title = '', description = '', countryCode = 'xx',
 }
 
 export async function runScraper() {
-    let browser;
+    let mainBrowser;
     let groups = [];
     try {
-        browser = await puppeteer.launch({
-            headless: true,
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-gpu',
-                '--disable-extensions',
-                '--disable-background-networking',
-                '--disable-sync',
-                '--no-first-run',
-                '--disable-default-apps',
-                '--disable-features=Translate,BackForwardCache',
-                '--mute-audio',
-                '--hide-scrollbars',
-                '--disable-popup-blocking'
-            ]
-        });
-                
-        const page = await browser.newPage();
+        // Inicializando o puppeteer-real-browser
+        const { browser, page } = await connect(getBrowserConfig());
+        mainBrowser = browser;
 
-        //await optimizePage(page);
-         
-        await page.setUserAgent(
-            'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-        );
-
-        await page.setViewport({
-            width: 384,
-            height: 699,
-            isMobile: true
-        });
+        // await optimizePage(page); // Se for usar, lembre-se de descomentar a função
     
         await page.goto('https://gruposwats.com', {
             waitUntil: 'networkidle2'
@@ -129,8 +87,8 @@ export async function runScraper() {
                 });
         });
     } finally {
-        if (browser) {
-            await browser.close();
+        if (mainBrowser) {
+            await mainBrowser.close();
         }
     }
 
@@ -237,41 +195,11 @@ export async function runScraper() {
     }
 
     for (const group of selectedGroups) {
-        let browser;
+        let currentBrowser;
 
         try {
-            browser = await puppeteer.launch({
-                headless: true,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-gpu',
-                    '--disable-extensions',
-                    '--disable-background-networking',
-                    '--disable-sync',
-                    '--no-first-run',
-                    '--disable-default-apps',
-                    '--disable-features=Translate,BackForwardCache',
-                    '--mute-audio',
-                    '--hide-scrollbars',
-                    '--disable-popup-blocking'
-                ]
-            });
-    
-            const page = await browser.newPage();
-
-            //await optimizePage(page);
-
-            await page.setUserAgent(
-                'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-            );
-    
-            await page.setViewport({
-                width: 384,
-                height: 699,
-                isMobile: true
-            });
+            const { browser, page } = await connect(getBrowserConfig());
+            currentBrowser = browser;
             
             console.log("Processando:", group.title);
     
@@ -279,8 +207,8 @@ export async function runScraper() {
         } catch (e) {
             console.error(e);
         } finally {
-            if (browser) {
-                await browser.close();
+            if (currentBrowser) {
+                await currentBrowser.close();
             }
         }
         /*
