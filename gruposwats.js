@@ -1,6 +1,6 @@
 import { connect } from 'puppeteer-real-browser';
 
-process.env.CHROME_PATH = process.env.CHROME_PATH || '/usr/bin/chromium';
+process.env.CHROME_PATH = process.env.CHROME_PATH || '/usr/bin/google-chrome-stable'
 
 /*
 function sleep(ms) {
