@@ -4,6 +4,7 @@ import mysql from 'mysql2/promise';
 import ftp from "basic-ftp";
 import fs from 'fs/promises';
 import path from 'path';
+import UserAgent from 'user-agents';
 import { fileURLToPath } from 'url';
 
 puppeteer.use(StealthPlugin());
@@ -22,6 +23,8 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+const userAgent = new UserAgent({ deviceCategory: 'mobile' });
+
 async function optimizePage(page) {
     await page.setRequestInterception(true);
 
@@ -31,8 +34,7 @@ async function optimizePage(page) {
         if (
             type === 'image' ||
             type === 'media' ||
-            type === 'font' ||
-            type === 'stylesheet'
+            type === 'font'
         ) {
             request.abort();
         } else {
@@ -130,16 +132,8 @@ export async function runChecker() {
         const page = await browser.newPage();
 
         await optimizePage(page);
-
-        await page.setUserAgent(
-            'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36'
-        );
-
-        await page.setViewport({
-            width: 384,
-            height: 699,
-            isMobile: true
-        });
+        
+        await page.setUserAgent(userAgent.toString());
 
         for (const group of groups) {
             total++;
