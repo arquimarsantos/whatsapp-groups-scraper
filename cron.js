@@ -1,10 +1,11 @@
 import cron from 'node-cron';
-import { runScraper } from './gruposwats.js';
+//import { runScraper } from './gruposwats.js';
 import { runChecker } from './check-groups.js';
 
 let isScraperRunning = false;
 let isCheckerRunning = false;
 
+/*
 async function executeScraper() {
     if (isCheckerRunning) {
         return;
@@ -27,6 +28,7 @@ async function executeScraper() {
         isScraperRunning = false;
     }
 }
+*/
 
 async function executeChecker() {
     if (isCheckerRunning || isScraperRunning) {
@@ -45,8 +47,8 @@ async function executeChecker() {
     }
 }
 
-executeScraper();
-//executeChecker();
+//executeScraper();
+executeChecker();
 
 // Checker a cada 3 horas
 //cron.schedule('0 */3 * * *', executeChecker);
