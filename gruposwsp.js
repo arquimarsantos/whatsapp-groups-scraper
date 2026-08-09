@@ -289,7 +289,7 @@ async function processGroup(group) {
     }
 }
 
-async function runScraper() {
+export async function runScraper() {
     const groups = await getGroups();
     
     if (!groups || groups.length === 0) {
