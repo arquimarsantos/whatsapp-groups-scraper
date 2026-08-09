@@ -117,20 +117,6 @@ async function launchBrowser() {
     });
 }
 
-async function safeGet(page, url, retries = 3, delay = 5000) {
-    for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-            return true;
-        } catch (e) {
-            console.log(`[${now()}] ⚠️ Falha ao carregar ${url} (Tentativa ${attempt}/${retries}): ${e.message}`);
-            if (attempt === retries) throw e;
-            await sleep(delay);
-        }
-    }
-    return false;
-}
-
 async function getGroups() {
     let browser;
     let groups = [];
@@ -144,7 +130,11 @@ async function getGroups() {
         await optimizePage(page);
 
         console.log(`[${now()}] ✅ Scraper iniciado!`);
-        await safeGet(page, 'https://gruposwsp.com');
+        
+        await page.goto('https://gruposwsp.com', {
+            waitUntil: 'domcontentloaded',
+            timeout: 30000
+        });
         
         await page.waitForSelector('div.chips', { timeout: 60000 });
 
@@ -168,7 +158,12 @@ async function getGroups() {
         }
 
         console.log(`[${now()}] 🎲 País selecionado: ${countryTxt}`);
-        await safeGet(page, country.href);
+        
+        await page.goto(country.href, {
+            waitUntil: 'domcontentloaded',
+            timeout: 30000
+        });
+        
         await page.waitForSelector('#groupsList a.gl-row', { timeout: 60000 });
 
         let allGroups = await page.$$eval('#groupsList a.gl-row', elements => elements.map(el => el.href));
@@ -205,7 +200,11 @@ async function processGroup(group) {
         await page.setViewport({ width: 1920, height: 1080 });
         await optimizePage(page);
 
-        await safeGet(page, group.url);
+        await page.goto(group.url, {
+            waitUntil: 'domcontentloaded',
+            timeout: 30000
+        });
+        
         await page.waitForSelector('h1', { timeout: 60000 });
 
         const siteTitle = await page.$eval('h1', el => el.innerText.trim());
