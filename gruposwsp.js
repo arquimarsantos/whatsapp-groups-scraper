@@ -144,11 +144,7 @@ async function getGroups() {
         await optimizePage(page);
 
         console.log(`[${now()}] ✅ Scraper iniciado!`);
-        await safeGet(page, 'https://google.com');
-
-        const delay = Math.random() * (60000 - 30000) + 30000;
-        console.log(`[${now()}] ⌛ Aguardando ${(delay / 1000).toFixed(2)}s para o próximo grupo...`);
-        await sleep(delay);
+        await safeGet(page, 'https://gruposwsp.com');
         
         await page.waitForSelector('div.chips', { timeout: 60000 });
 
