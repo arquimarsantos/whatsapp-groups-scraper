@@ -123,9 +123,9 @@ async function getGroups() {
     try {
         browser = await launchBrowser();
         const page = await browser.newPage();
-        //const crawler = getRandomCrawlerUserAgent();
+        const crawler = getRandomCrawlerUserAgent();
 
-        //await page.setUserAgent(crawler.userAgent);
+        await page.setUserAgent(crawler.userAgent);
         await page.setViewport({ width: 1920, height: 1080 });
         await optimizePage(page);
 
@@ -194,9 +194,9 @@ async function processGroup(group) {
     try {
         browser = await launchBrowser();
         const page = await browser.newPage();
-        //const crawler = getRandomCrawlerUserAgent();
+        const crawler = getRandomCrawlerUserAgent();
 
-        //await page.setUserAgent(crawler.userAgent);
+        await page.setUserAgent(crawler.userAgent);
         await page.setViewport({ width: 1920, height: 1080 });
         await optimizePage(page);
 
