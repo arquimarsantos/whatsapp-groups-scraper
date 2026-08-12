@@ -1,10 +1,11 @@
 import cron from 'node-cron';
-import { runScraper } from './gruposwsp.js';
-//import { runChecker } from './check-groups.js';
+//import { runScraper } from './gruposwsp.js';
+import { runChecker } from './check-groups.js';
 
 let isScraperRunning = false;
 let isCheckerRunning = false;
 
+/*
 async function executeScraper() {
     if (isCheckerRunning) {
         return;
@@ -27,8 +28,8 @@ async function executeScraper() {
         isScraperRunning = false;
     }
 }
+*/
 
-/*
 async function executeChecker() {
     if (isCheckerRunning || isScraperRunning) {
         return;
@@ -45,13 +46,12 @@ async function executeChecker() {
         isCheckerRunning = false;
     }
 }
-*/
 
-executeScraper();
+//executeScraper();
 //executeChecker();
 
 // Checker a cada 6 horas
-//cron.schedule('0 */6 * * *', executeChecker);
+cron.schedule('0 */6 * * *', executeChecker);
 
 // Scraper a cada 1 hora e minuto 5
 //cron.schedule('5 * * * *', executeScraper);
