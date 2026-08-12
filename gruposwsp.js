@@ -132,11 +132,14 @@ async function getGroups() {
         await optimizePage(page);
 
         console.log(`[${now()}] ✅ Scraper iniciado!`);
-        
+        try {
         await page.goto('https://gruposwsp.com', {
             waitUntil: 'domcontentloaded',
             timeout: 30000
         });
+        } catch (erroCarregamento) {
+            console.log(`[${now()}] ⚠️ O site demorou muito! Forçando a print para ver onde travou...`);
+        }
 
         console.log(`[${now()}] 📸 Aguardando 20 segundos para tirar a print da página...`);
         await sleep(20000);
