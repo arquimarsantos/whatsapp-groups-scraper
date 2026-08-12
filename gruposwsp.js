@@ -129,7 +129,7 @@ async function getGroups() {
 
         await page.setUserAgent(crawler.userAgent);
         await page.setViewport({ width: 1920, height: 1080 });
-        await optimizePage(page);
+        //await optimizePage(page);
 
         console.log(`[${now()}] ✅ Scraper iniciado!`);
         try {
