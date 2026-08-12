@@ -4,8 +4,6 @@ import crawlerUserAgents from 'crawler-user-agents';
 import path from 'path';
 import { execFile } from 'child_process';
 import { fileURLToPath } from 'url';
-import ftp from 'basic-ftp';
-import fs from 'fs/promises';
 
 puppeteer.use(StealthPlugin());
 
@@ -129,46 +127,14 @@ async function getGroups() {
 
         await page.setUserAgent(crawler.userAgent);
         await page.setViewport({ width: 1920, height: 1080 });
-        //await optimizePage(page);
+        await optimizePage(page);
 
         console.log(`[${now()}] ✅ Scraper iniciado!`);
-        try {
+        
         await page.goto('https://gruposwsp.com', {
             waitUntil: 'domcontentloaded',
             timeout: 30000
         });
-        } catch (erroCarregamento) {
-            console.log(`[${now()}] ⚠️ O site demorou muito! Forçando a print para ver onde travou...`);
-        }
-
-        console.log(`[${now()}] 📸 Aguardando 20 segundos para tirar a print da página...`);
-        await sleep(20000);
-        
-        const printName = `debug_page_${Date.now()}.png`;
-        const localPrintPath = path.join(__dirname, printName);
-        
-        await page.screenshot({ path: localPrintPath, fullPage: true });
-        console.log(`[${now()}] 🖼️ Print salva localmente: ${printName}`);
-
-        const ftpClient = new ftp.Client();
-        try {
-            await ftpClient.access({
-                host: process.env.FTP_HOST,
-                user: process.env.FTP_USER,
-                password: process.env.FTP_PASSWORD,
-                secure: false
-            });
-            
-            const remotePath = `/domains/linkwhatss.com/public_html/img/${printName}`;
-            
-            await ftpClient.uploadFrom(localPrintPath, remotePath);
-            console.log(`[${now()}] 📤 Print enviada via FTP com sucesso para: ${remotePath}`);
-            
-        } catch (err) {
-            console.error(`[${now()}] ❌ Erro no FTP ao tentar enviar a print:`, err);
-        } finally {
-            ftpClient.close();
-        }
         
         await page.waitForSelector('div.chips', { timeout: 60000 });
 
