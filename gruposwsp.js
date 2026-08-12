@@ -7,6 +7,9 @@ import { fileURLToPath } from 'url';
 
 puppeteer.use(StealthPlugin());
 
+// socks5://47.252.47.39:1080
+// socks5://199.102.105.242:4145
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PHP_SCRIPT = path.join(__dirname, 'save-scraped-group.php');
