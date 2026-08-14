@@ -50,8 +50,8 @@ async function executeChecker() {
 //executeScraper();
 //executeChecker();
 
-// Checker a cada 6 horas
-cron.schedule('0 */6 * * *', executeChecker);
+// Checker a cada 24 horas
+cron.schedule('0 0 * * *', executeChecker);
 
 // Scraper a cada 1 hora e minuto 5
 //cron.schedule('5 * * * *', executeScraper);
