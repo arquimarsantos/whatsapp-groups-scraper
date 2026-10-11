@@ -21,7 +21,7 @@ async function executeChecker() {
     }
 }
 
-executeChecker();
+//executeChecker();
 
 cron.schedule('0 0 * * *', executeChecker);
 
