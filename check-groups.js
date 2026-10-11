@@ -75,7 +75,7 @@ async function deleteImg(filename) {
             host: process.env.FTP_HOST,
             user: process.env.FTP_USER,
             password: process.env.FTP_PASSWORD,
-            secure: false
+            secure: true
         });
 
         await client.remove(`/domains/linkwhatss.com/public_html/img/groups/${filename}`);
